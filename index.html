@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Compliance Monitoring System</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            
+            --safe-bg: #e8f5e9;
+            --safe-text: #2e7d32;
+            --safe-border: #c8e6c9;
+            --safe-main: #4caf50;
+            
+            --risk-bg: #fff8e1;
+            --risk-text: #f57f17;
+            --risk-border: #ffecb3;
+            --risk-main: #ff9800;
+            
+            --violation-bg: #ffebee;
+            --violation-text: #c62828;
+            --violation-border: #ffcdd2;
+            --violation-main: #f44336;
+
+            --btn-primary: #1976d2;
+            --btn-primary-hover: #1565c0;
+            --btn-secondary: #9e9e9e;
+            --btn-secondary-hover: #757575;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--btn-primary);
+            background-color: #fff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-check {
+            background-color: var(--btn-primary);
+            color: white;
+        }
+
+        .btn-check:hover {
+            background-color: var(--btn-primary-hover);
+        }
+
+        .btn-reset {
+            background-color: var(--btn-secondary);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background-color: var(--btn-secondary-hover);
+        }
+
+        #result-card {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid;
+            text-align: center;
+        }
+
+        #result-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #result-suggestion {
+            font-size: 15px;
+        }
+
+        .result-Safe {
+            background-color: var(--safe-bg);
+            border-color: var(--safe-border);
+            color: var(--safe-text);
+        }
+
+        .result-Risk {
+            background-color: var(--risk-bg);
+            border-color: var(--risk-border);
+            color: var(--risk-text);
+        }
+
+        .result-Violation {
+            background-color: var(--violation-bg);
+            border-color: var(--violation-border);
+            color: var(--violation-text);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f9f9f9;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+        }
+
+        .badge-Safe {
+            background-color: var(--safe-main);
+        }
+
+        .badge-Risk {
+            background-color: var(--risk-main);
+            color: #fff;
+        }
+
+        .badge-Violation {
+            background-color: var(--violation-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Input Form Card -->
+        <div class="card">
+            <h1>Smart Compliance Monitoring</h1>
+            
+            <form id="compliance-form">
+                <div class="form-group">
+                    <label for="company-name">Company Name</label>
+                    <input type="text" id="company-name" placeholder="Enter Company Name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="industry-type">Industry Type</label>
+                    <select id="industry-type" required>
+                        <option value="" disabled selected>Select Industry</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="IT">IT</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="compliance-status">Compliance Status</label>
+                    <select id="compliance-status" required>
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="Safe">Safe</option>
+                        <option value="Risk">Risk</option>
+                        <option value="Violation">Violation</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-check">Check Compliance</button>
+                    <button type="button" class="btn-reset" onclick="resetForm()">Reset</button>
+                </div>
+            </form>
+
+            <div id="result-card">
+                <div id="result-title"></div>
+                <div id="result-suggestion"></div>
+            </div>
+        </div>
+
+        <!-- History Log Card -->
+        <div class="card">
+            <h2>History Log</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Company Name</th>
+                            <th>Industry</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- History rows will be injected here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const form = document.getElementById('compliance-form');
+        const companyNameEl = document.getElementById('company-name');
+        const industryTypeEl = document.getElementById('industry-type');
+        const complianceStatusEl = document.getElementById('compliance-status');
+        const resultCard = document.getElementById('result-card');
+        const resultTitle = document.getElementById('result-title');
+        const resultSuggestion = document.getElementById('result-suggestion');
+        const historyBody = document.getElementById('history-body');
+
+        // Load existing history on page load
+        document.addEventListener('DOMContentLoaded', loadHistory);
+
+        // Form Submit Handler
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent page refresh
+
+            const companyName = companyNameEl.value.trim();
+            const industryType = industryTypeEl.value;
+            const complianceStatus = complianceStatusEl.value;
+
+            // Validation (No empty fields)
+            if (!companyName || !industryType || !complianceStatus) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Display Results
+            showResult(complianceStatus);
+
+            // Create record object
+            const record = {
+                date: new Date().toLocaleString(),
+                companyName: companyName,
+                industryType: industryType,
+                complianceStatus: complianceStatus
+            };
+
+            // Save and update UI
+            saveRecord(record);
+            renderRow(record, true);
+        });
+
+        // Show Result Logic
+        function showResult(status) {
+            resultCard.style.display = 'block';
+            
+            // Remove previous classes
+            resultCard.className = '';
+            resultCard.classList.add('result-' + status);
+
+            if (status === 'Safe') {
+                resultTitle.textContent = "Your company is compliant";
+                resultSuggestion.textContent = "Suggestion: Maintain current standards";
+            } else if (status === 'Risk') {
+                resultTitle.textContent = "Potential compliance risk detected";
+                resultSuggestion.textContent = "Suggestion: Review policies and update";
+            } else if (status === 'Violation') {
+                resultTitle.textContent = "Compliance violation found";
+                resultSuggestion.textContent = "Suggestion: Take immediate corrective action";
+            }
+        }
+
+        // Reset Form
+        function resetForm() {
+            form.reset();
+            resultCard.style.display = 'none';
+        }
+
+        // Add Record to LocalStorage
+        function saveRecord(record) {
+            let history = JSON.parse(localStorage.getItem('complianceHistory')) || [];
+            // Add new record to the start of the array
+            history.unshift(record);
+            localStorage.setItem('complianceHistory', JSON.stringify(history));
+        }
+
+        // Load Data from LocalStorage
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem('complianceHistory')) || [];
+            historyBody.innerHTML = ''; // Clear table
+            history.forEach(record => {
+                renderRow(record, false);
+            });
+        }
+
+        // Render Table Row
+        function renderRow(record, isNew) {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${record.date}</td>
+                <td><strong>${record.companyName}</strong></td>
+                <td>${record.industryType}</td>
+                <td><span class="badge badge-${record.complianceStatus}">${record.complianceStatus}</span></td>
+            `;
+
+            if (isNew) {
+                // Add to the top of the table
+                historyBody.insertBefore(row, historyBody.firstChild);
+            } else {
+                // Add normally during load
+                historyBody.appendChild(row);
+            }
+        }
+    </script>
+</body>
+</html>
